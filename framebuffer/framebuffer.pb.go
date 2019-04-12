@@ -22,6 +22,13 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+//
+//Layer defines some default layers for compositing animations onto for
+//various purposes, and also defines some generic layers. Each service
+//should be allocated a unique enum eventually.
+//
+//In the future, this system should be replaced by a configuration file
+//that assigns priorities to each service.
 type Layer int32
 
 const (
@@ -85,6 +92,10 @@ func (Layer) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_4476fbda566a3634, []int{0}
 }
 
+//
+//FrameData represents either an array of dots or a fixed fill color to apply
+//to all dots. Having two use cases makes it easier for applications to
+//draw solid fill colors.
 type FrameData struct {
 	// ARGB
 	Dots                 []uint32 `protobuf:"fixed32,1,rep,packed,name=dots,proto3" json:"dots,omitempty"`
@@ -133,6 +144,10 @@ func (m *FrameData) GetFill() uint32 {
 	return 0
 }
 
+//
+//FrameBuffer represents an entire frame together with a layer tag. It also
+//defines a timestamp that can be used within a FrameSequence to define the
+//duration a frame will be shown.
 type FrameBuffer struct {
 	Frame                *FrameData `protobuf:"bytes,1,opt,name=frame,proto3" json:"frame,omitempty"`
 	Timestamp            uint32     `protobuf:"fixed32,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
@@ -188,6 +203,13 @@ func (m *FrameBuffer) GetLayer() Layer {
 	return Layer_NONE
 }
 
+//
+//FrameSequence buffers a series of frames to be drawn one by one at intervals
+//defined by the timestamp included in the FrameBuffers. Useful for running
+//smooth animations.
+//
+//In the future, this should have more metadata like looping counts and async
+//animations.
 type FrameSequence struct {
 	Frames               []*FrameBuffer `protobuf:"bytes,1,rep,name=frames,proto3" json:"frames,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
@@ -306,7 +328,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DrawerClient interface {
+	// DrawFrame draws one frame
 	DrawFrame(ctx context.Context, in *FrameBuffer, opts ...grpc.CallOption) (*DrawResponse, error)
+	// DrawFrames draws a series of frames
 	DrawFrames(ctx context.Context, in *FrameSequence, opts ...grpc.CallOption) (*DrawResponse, error)
 }
 
@@ -338,7 +362,9 @@ func (c *drawerClient) DrawFrames(ctx context.Context, in *FrameSequence, opts .
 
 // DrawerServer is the server API for Drawer service.
 type DrawerServer interface {
+	// DrawFrame draws one frame
 	DrawFrame(context.Context, *FrameBuffer) (*DrawResponse, error)
+	// DrawFrames draws a series of frames
 	DrawFrames(context.Context, *FrameSequence) (*DrawResponse, error)
 }
 

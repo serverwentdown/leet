@@ -1,5 +1,13 @@
 syntax = "proto3";
 
+/*
+  Layer defines some default layers for compositing animations onto for 
+  various purposes, and also defines some generic layers. Each service 
+  should be allocated a unique enum eventually. 
+  
+  In the future, this system should be replaced by a configuration file
+  that assigns priorities to each service.
+*/
 enum Layer {
   NONE = 0;
   // Well-known layers
@@ -19,18 +27,36 @@ enum Layer {
   GENERAL_9 = 49; 
 }
 
+/*
+  FrameData represents either an array of dots or a fixed fill color to apply
+  to all dots. Having two use cases makes it easier for applications to
+  draw solid fill colors.
+*/
 message FrameData {
   // ARGB
   repeated fixed32 dots = 1;
   fixed32 fill = 2;  
 }
 
+/*
+  FrameBuffer represents an entire frame together with a layer tag. It also
+  defines a timestamp that can be used within a FrameSequence to define the 
+  duration a frame will be shown. 
+*/
 message FrameBuffer {
   FrameData frame = 1;
   fixed32 timestamp = 3;
   Layer layer = 4;
 }
 
+/*
+  FrameSequence buffers a series of frames to be drawn one by one at intervals
+  defined by the timestamp included in the FrameBuffers. Useful for running 
+  smooth animations. 
+
+  In the future, this should have more metadata like looping counts and async
+  animations. 
+*/
 message FrameSequence {
   repeated FrameBuffer frames = 1;
 }
@@ -39,7 +65,9 @@ message DrawResponse {
 }
 
 service Drawer {
+  // DrawFrame draws one frame
   rpc DrawFrame (FrameBuffer) returns (DrawResponse) {}
+  // DrawFrames draws a series of frames
   rpc DrawFrames (FrameSequence) returns (DrawResponse) {}
 }
-  
+ 
