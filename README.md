@@ -1,7 +1,18 @@
 
 # leet
 
-Environmental lighting over gRPC (WTF?!)
+Environmental lighting over gRPC
+
+## TODO
+
+- [ ] Create lighting client, with tempreature setting
+- [ ] Create a color cycle client for when I'm partying alone because I'm lonely
+- [ ] Write an Android app that taps onto new system notifications
+- [ ] Write an IMAP client that polls for new emails
+- [ ] Make the server more generic
+  - [ ] Configuration for service overlay priorities
+  - [ ] Queues for each layer, to enable sharing of layers
+- [ ] Attempt some audio visualisations
 
 ## WTF?!
 
