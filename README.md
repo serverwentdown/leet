@@ -1,7 +1,7 @@
 
 # leet
 
-Environmental lighting over gRPC
+Pronounced as "lit". Environmental lighting over gRPC
 
 ## TODO
 
