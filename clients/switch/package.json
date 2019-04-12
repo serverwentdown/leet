@@ -7,9 +7,12 @@
   "license": "MPL-2.0",
   "scripts": {
     "generate": "yarn run generate-grpc",
-    "generate-grpc": "protoc -I../../framebuffer ../../framebuffer/framebuffer.proto --js_out=import_style=commonjs,binary:framebuffer --grpc_out=framebuffer --plugin=protoc-gen-grpc=grpc_tools_node_protoc_plugin"
+    "generate-grpc": "grpc_tools_node_protoc -I../../framebuffer ../../framebuffer/framebuffer.proto --js_out=import_style=commonjs,binary:framebuffer --grpc_out=framebuffer --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin`"
   },
   "dependencies": {
     "grpc": "^1.19.0"
+  },
+  "devDependencies": {
+    "grpc-tools": "^1.7.3"
   }
 }
