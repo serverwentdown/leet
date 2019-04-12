@@ -1,0 +1,8 @@
+{
+  "name": "switch",
+  "version": "0.1.0",
+  "description": "Turn the lights on!",
+  "repository": "git@github.com:serverwentdown/leet.git",
+  "author": "Ambrose Chua",
+  "license": "MPL 2.0"
+}
