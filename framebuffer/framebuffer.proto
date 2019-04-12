@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+enum Layer {
+  NONE = 0;
+  // Well-known layers
+  LIGHT = 10;
+  COLOR = 20;
+  NOTIFICATIONS = 90;
+  // Public layers
+  GENERAL_0 = 40;
+  GENERAL_1 = 41;
+  GENERAL_2 = 42; 
+  GENERAL_3 = 43; 
+  GENERAL_4 = 44; 
+  GENERAL_5 = 45; 
+  GENERAL_6 = 46; 
+  GENERAL_7 = 47; 
+  GENERAL_8 = 48; 
+  GENERAL_9 = 49; 
+}
+
+message FrameData {
+  // ARGB
+  repeated fixed32 dots = 1;
+  fixed32 fill = 2;  
+}
+
+message FrameBuffer {
+  FrameData frame = 1;
+  fixed32 timestamp = 3;
+  Layer layer = 4;
+}
+
+message FrameSequence {
+  repeated FrameBuffer frames = 1;
+}
+
+message DrawResponse {
+}
+
+service Drawer {
+  rpc DrawFrame (FrameBuffer) returns (DrawResponse) {}
+  rpc DrawFrames (FrameSequence) returns (DrawResponse) {}
+}
+  
