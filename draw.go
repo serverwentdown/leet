@@ -17,6 +17,7 @@ type Drawer struct {
 func NewDrawer(length int) (*Drawer, error) {
 	opt := ws2811.DefaultOptions
 	opt.Channels[0].LedCount = length
+	opt.Channels[0].Brightness = 255
 
 	d := &Drawer{}
 	d.length = length
@@ -65,6 +66,9 @@ func (d *Drawer) Draw() error {
 func mix(layers [][]uint32, j int) uint32 {
 	var base uint32
 	for i := 0; i < len(layers); i++ {
+		if j >= len(layers[i]) {
+			continue
+		}
 		base = mixColors(base, layers[i][j])
 	}
 	return base

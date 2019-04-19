@@ -21,6 +21,7 @@ func NewServer(drawer *Drawer) *Server {
 }
 
 func (s *Server) DrawFrame(ctx context.Context, in *framebuffer.FrameBuffer) (*framebuffer.DrawResponse, error) {
+	log.Print("DrawFrame")
 	s.drawer.SetLayerOrFill(int32(in.Layer), in.Frame.Dots, in.Frame.Fill)
 	err := s.drawer.Draw()
 	if err != nil {

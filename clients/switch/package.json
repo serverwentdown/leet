@@ -5,14 +5,10 @@
   "repository": "git@github.com:serverwentdown/leet.git",
   "author": "Ambrose Chua",
   "license": "MPL-2.0",
-  "scripts": {
-    "generate": "yarn run generate-grpc",
-    "generate-grpc": "grpc_tools_node_protoc -I../../framebuffer ../../framebuffer/framebuffer.proto --js_out=import_style=commonjs,binary:framebuffer --grpc_out=framebuffer --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin`"
-  },
   "dependencies": {
+    "@grpc/grpc-js": "^0.3.6",
+    "@grpc/proto-loader": "^0.5.0",
+    "express": "^4.16.4",
     "grpc": "^1.19.0"
-  },
-  "devDependencies": {
-    "grpc-tools": "^1.7.3"
   }
 }
