@@ -2,40 +2,23 @@ syntax = "proto3";
 
 /*
   Layer defines some default layers for compositing animations onto for 
-  various purposes, and also defines some generic layers. Each service 
-  should be allocated a unique enum eventually. 
-  
-  In the future, this system should be replaced by a configuration file
-  that assigns priorities to each service.
+  various purposes.
 */
 enum Layer {
   NONE = 0;
   // Well-known layers
-  LIGHT = 10;
-  COLOR = 20;
-  NOTIFICATIONS = 90;
-  // Public layers
-  GENERAL_0 = 40;
-  GENERAL_1 = 41;
-  GENERAL_2 = 42; 
-  GENERAL_3 = 43; 
-  GENERAL_4 = 44; 
-  GENERAL_5 = 45; 
-  GENERAL_6 = 46; 
-  GENERAL_7 = 47; 
-  GENERAL_8 = 48; 
-  GENERAL_9 = 49; 
+  LIGHT = 1;
+  COLOR = 2;
+  NOTIFICATIONS = 8;
+  PRIORITY = 9;
 }
 
 /*
-  FrameData represents either an array of dots or a fixed fill color to apply
-  to all dots. Having two use cases makes it easier for applications to
-  draw solid fill colors.
+  FrameData represents an ARGB array of dots.
 */
 message FrameData {
   // ARGB
   repeated fixed32 dots = 1;
-  fixed32 fill = 2;  
 }
 
 /*
@@ -45,8 +28,10 @@ message FrameData {
 */
 message FrameBuffer {
   FrameData frame = 1;
-  fixed32 timestamp = 3;
-  Layer layer = 4;
+  // Time offset from start of frame in milliseconds
+  fixed32 timestamp = 2;
+  // Layer to apply the frame to
+  Layer layer = 3;
 }
 
 /*
@@ -59,9 +44,18 @@ message FrameBuffer {
 */
 message FrameSequence {
   repeated FrameBuffer frames = 1;
+  // Number of times to loop the sequence
+  int32 loop = 2; 
 }
 
 message DrawResponse {
+}
+
+message LengthRequest {
+}
+
+message LengthResponse {
+  fixed32 length = 1;
 }
 
 service Drawer {
@@ -69,5 +63,7 @@ service Drawer {
   rpc DrawFrame (FrameBuffer) returns (DrawResponse) {}
   // DrawFrames draws a series of frames
   rpc DrawFrames (FrameSequence) returns (DrawResponse) {}
+  // GetLength returns the length of the strip
+  rpc GetLength (LengthRequest) returns (LengthResponse) {}
 }
  

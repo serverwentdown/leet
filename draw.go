@@ -2,15 +2,20 @@ package main // import "github.com/serverwentdown/leet"
 
 import (
 	"log"
+	"time"
 
 	ws2811 "github.com/rpi-ws281x/rpi-ws281x-go"
 )
 
 // TODO: full-sized grid with multiple channels mapped onto the grid
 
+const (
+	MAX_LAYERS = 10
+)
+
 type Drawer struct {
+	Length int
 	layers [][]uint32
-	length int
 	device *ws2811.WS2811
 }
 
@@ -20,8 +25,14 @@ func NewDrawer(length int) (*Drawer, error) {
 	opt.Channels[0].Brightness = 255
 
 	d := &Drawer{}
-	d.length = length
-	d.layers = make([][]uint32, 100)
+	d.Length = length
+	d.layers = make([][]uint32, MAX_LAYERS)
+	for i := range d.layers {
+		d.layers[i] = make([]uint32, length)
+	}
+	for i := range d.layers[0] {
+		d.layers[0][i] = 0xff000000
+	}
 	dev, err := ws2811.MakeWS2811(&opt)
 	if err != nil {
 		return nil, err
@@ -36,40 +47,37 @@ func NewDrawer(length int) (*Drawer, error) {
 }
 
 func (d *Drawer) SetLayer(layer int32, dots []uint32) {
-	d.layers[layer] = dots
-}
-
-func (d *Drawer) SetLayerOrFill(layer int32, dots []uint32, fill uint32) {
-	if dots == nil {
-		fillDots := make([]uint32, d.length)
-		for i := 0; i < d.length; i++ {
-			fillDots[i] = fill
+	for i, dot := range dots {
+		if i > d.Length {
+			break
 		}
-		d.layers[layer] = fillDots
-	} else {
-		d.SetLayer(layer, dots)
+		d.layers[layer][i] = dot
 	}
 }
 
 func (d *Drawer) Draw() error {
-	for i := 0; i < len(d.device.Leds(0)); i++ {
+	timeMixStart := time.Now()
+	for i := 0; i < d.Length; i++ {
 		dot := mix(d.layers, i)
 		d.device.Leds(0)[i] = dot
 	}
+	timeMixEnd := time.Now()
 
 	if err := d.device.Render(); err != nil {
 		return err
 	}
+
+	log.Printf("mix took %d milliseconds", timeMixEnd.Sub(timeMixStart)/1000/1000)
 	return nil
 }
 
-func mix(layers [][]uint32, j int) uint32 {
+func mix(layers [][]uint32, i int) uint32 {
 	var base uint32
-	for i := 0; i < len(layers); i++ {
-		if j >= len(layers[i]) {
+	for _, layer := range layers {
+		if i >= len(layer) {
 			continue
 		}
-		base = mixColors(base, layers[i][j])
+		base = mixColors(layer[i], base)
 	}
 	return base
 }
@@ -81,7 +89,6 @@ func mixColors(a uint32, b uint32) uint32 {
 	ag, bg := a&uint32(0x0000FF00)>>8, b&uint32(0x0000FF00)>>8
 	ab, bb := a&uint32(0x000000FF), b&uint32(0x000000FF)
 	// Apply alpha computation to each channel
-	log.Println(aa, ar, ag, ab, ba, br, bg, bb)
 	oa := uint32(ba*(255-aa)/255 + aa)
 	or := uint32(br*ba*(255-aa)/(255*255) + ar*aa/255)
 	og := uint32(bg*ba*(255-aa)/(255*255) + ag*aa/255)

@@ -9,7 +9,7 @@ import (
 )
 
 const listen = ":5000"
-const length = 287
+const length = 275
 
 func main() {
 	log.Print("starting server")
@@ -20,7 +20,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 
-	drawer, err := NewDrawer(287)
+	drawer, err := NewDrawer(length)
 	if err != nil {
 		log.Fatalf("failed to setup WS281x library: %v", err)
 	}

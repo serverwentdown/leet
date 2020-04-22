@@ -16,6 +16,7 @@ const express = require('express');
 const app = express();
 const PORT = 5001;
 
+const PIXEL_COUNT = 275;
 
 // TODO: async
 app.post('/on', (req, res, next) => {
@@ -31,7 +32,7 @@ app.post('/on', (req, res, next) => {
 	}
 	client.drawFrame({
 		frame: {
-			fill,
+			dots: Array(PIXEL_COUNT-1).fill(fill).concat([0xBBFF0000]),
 		},
 		layer: 'LIGHT',
 	}, (err, resp) => {
@@ -45,7 +46,7 @@ app.post('/on', (req, res, next) => {
 app.post('/off', (req, res, next) => {
 	client.drawFrame({
 		frame: {
-			fill: 0x00000000,
+			dots: Array(PIXEL_COUNT).fill(0x00000000),
 		},
 		layer: 'LIGHT',
 	}, (err, resp) => {
