@@ -9,6 +9,6 @@
     "@grpc/grpc-js": "^1.0.1",
     "@grpc/proto-loader": "^0.5.4",
     "express": "^4.17.1",
-    "grpc": "^1.24.2"
+    "grpc": "^1.24.9"
   }
 }
